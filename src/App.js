@@ -1,25 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
 
-function App() {
+
+import {  Paper, ThemeProvider } from '@material-ui/core';
+import React from 'react';
+import './App.css';
+import useTheme from './hooks/useTheme';
+import Core from "./component/core/Core";
+
+     
+const  App  =() => {
+
+  const {theme} = useTheme();
+
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  
+     <ThemeProvider theme={theme}>
+      <Paper style={{minHeight:'100vh' , backgroundColor:theme.palette.background.default}}>
+        <Core/> 
+      </Paper>
+    </ThemeProvider>
+ 
   );
 }
-
+export const dataoftheme = React.createContext();
 export default App;

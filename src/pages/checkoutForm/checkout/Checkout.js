@@ -1,17 +1,16 @@
 import { Button, CircularProgress, Divider, Step, StepLabel, Stepper, Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import {commerce} from '../../../lib/commerce';
 import AddressForm from '../AddressForm';
 import PaymentForm from '../PaymentForm';
 import { Link, useNavigate } from 'react-router-dom';
 import useStyles from './style';
 
-export default function Checkout( {onCaptureCheckout,order, error,cart,handleEmptyCart}) {
+export default function Checkout( {order,handleGenerateToken,handleCaptureOrder, error,cart}) {
   
   
     const classes = useStyles();
     let navigate = useNavigate();
-    const [checkoutToken, setCheckoutToken] = useState(null);
+  
     const [activeStep, setActiveStep] = useState(0);
     const [shippingData, setShippingData] = useState({});
     const nextStep = () => setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -23,18 +22,11 @@ export default function Checkout( {onCaptureCheckout,order, error,cart,handleEmp
         nextStep();
     }
     useEffect(()=>{
-        if(cart.id)
-        {
-            const generateToken = async () => {
-                try {
-                  const token = await commerce.checkout.generateToken(cart.id, { type: 'cart' });
-                  setCheckoutToken(token);
-                } catch {
-                  if (activeStep !== steps.length) navigate('/');
-                }
-        };
-        generateToken();
-    }},[cart])
+        if(cart.cart.total_items)
+         handleGenerateToken(cart.cart.id);
+        else 
+           navigate('/');
+},[cart.cart])
 
     let Confirmation = () => (order.customer ? (
         <>
@@ -53,8 +45,8 @@ export default function Checkout( {onCaptureCheckout,order, error,cart,handleEmp
       ));
 
     const Form = () => (activeStep === 0 
-        ? <AddressForm checkoutToken={checkoutToken} nextStep={nextStep} setShippingData={setShippingData} test={test} />
-        :   <PaymentForm  checkoutToken={checkoutToken} nextStep={nextStep} backStep={backStep} setShippingData={setShippingData} shippingData={shippingData} onCaptureCheckout={onCaptureCheckout}/>
+        ? <AddressForm checkoutToken={cart.checkoutToken} nextStep={nextStep} setShippingData={setShippingData} test={test} />
+        :   <PaymentForm  checkoutToken={cart.checkoutToken} nextStep={nextStep} backStep={backStep} setShippingData={setShippingData} shippingData={shippingData} handleCaptureOrder={handleCaptureOrder}/>
         )
  
  
@@ -69,6 +61,6 @@ export default function Checkout( {onCaptureCheckout,order, error,cart,handleEmp
                     </Step>
           ))}
       </Stepper>
-      {activeStep === steps.length ? <Confirmation /> : checkoutToken && <Form /> }
+      {activeStep === steps.length ? <Confirmation /> : cart.checkoutToken && <Form /> }
   </>;
 }

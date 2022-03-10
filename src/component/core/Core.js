@@ -18,9 +18,11 @@ const queryClient = new QueryClient();
  
 
 
- const  Core =()=> {
+ const  Core =(props)=> {
+   console.log(props);
+
     const [products, setProducts] = useState([]);
-    const [categories, setCategories] = useState([]);
+    
     const [cart, setCart] = useState({});
     const [order, setOrder] = useState({});
     const [errorMessage, setErrorMessage] = useState('');
@@ -30,19 +32,11 @@ const queryClient = new QueryClient();
     
         setProducts(data);
       };
-      const fetchCategories = async () => {
-        const { data } = await commerce.categories.list();
-    
-        setCategories(data);
-      };
+      
       const fetchCart = async () => {
         setCart(await commerce.cart.retrieve());
       };
-      const handleAddToCart = async (productId, quantity) => {
-        const item = await commerce.cart.add(productId, quantity);
     
-        setCart(item.cart);
-      };
        
     
     
@@ -63,16 +57,13 @@ const queryClient = new QueryClient();
         }
       };
       
-      const RetriveCart= async()=>{
-            const data = await  commerce.cart.retrieve();
-            setCart(data);
-        }
+     
 
       useEffect(()=>{
         fetchProducts();
         fetchCart();
-      
-        fetchCategories();
+      props.fetchCategories();
+      props.fetchCart();
       },[])
  
    
@@ -87,15 +78,16 @@ const queryClient = new QueryClient();
         <Router>
          
         <Navbar 
-         total_items={cart.total_items} 
-         categories={categories}
+         cart={props.cart} 
+         categories={props.categories}
+
         />
        
         <Routes>
         <Route
          path='/'  element={
          <MainView 
-        categories={categories} 
+        categories={props.categories} 
         />}
          />
          <Route 
@@ -105,19 +97,31 @@ const queryClient = new QueryClient();
            
          <Productcategory
          products={products}
-         handleAddToCart={handleAddToCart}
+         handleAddToCart={props.handleAddToCart}
          />
      
         } 
         />
         <Route
        path='order' 
-        element={<Showorders RetriveCart={RetriveCart}  carts={cart}/>}
+        element={<Showorders 
+          RetriveCart={props.RetriveCart} 
+          handleAddToCart={props.handleAddToCart}
+          handleMinusFromCart={props.handleMinusFromCart}
+          handleRemoveFromCart={props.handleRemoveFromCart}
+          handleEmptyCart={props.handleEmptyCart}
+          cart={props.cart}
+              />}
          />
          <Route 
          path='checkout' 
-         element={<Checkout cart={cart} order={order} error={errorMessage} onCaptureCheckout={handleCaptureCheckout} 
-  
+         element={<Checkout
+           cart={props.cart}
+            order={order}
+             error={errorMessage} 
+             onCaptureCheckout={handleCaptureCheckout} 
+             handleGenerateToken={props.handleGenerateToken}
+             handleCaptureOrder={props.handleCaptureOrder}
          />}
          />
        

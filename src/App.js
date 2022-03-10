@@ -7,7 +7,7 @@ import useTheme from './hooks/useTheme';
 import Core from "./component/core/Core";
 
      
-const  App  =() => {
+const  App  =(props) => {
 
   const {theme} = useTheme();
 
@@ -17,7 +17,7 @@ const  App  =() => {
   
      <ThemeProvider theme={theme}>
       <Paper style={{minHeight:'100vh' , backgroundColor:theme.palette.background.default}}>
-        <Core/> 
+        <Core  {...props} /> 
       </Paper>
     </ThemeProvider>
  

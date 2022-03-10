@@ -14,8 +14,8 @@ import { ListItemButton } from '@mui/material';
 
 
 
-const NavBar =({isLoading,categories,total_items})=>{
-
+const NavBar =({categories,cart})=>{
+console.log(cart)
 
 
   const {currentTheme,setDarkMode}=useTheme();   
@@ -42,7 +42,7 @@ const handleClick = () => {setOpen(!open);};
 
 
 
-const MenuItemCategoryPc  = categories?.map((category) => (
+const MenuItemCategoryPc  = categories?.categories?.map((category) => (
   <MenuItem  component={Link} role='link' to={`/productCategory/${category.slug}`} divider key={category.name} onClick={handleCloseCategoryMenu}>
     <Typography   color='inherit'  textalign="center">{category.name}</Typography>
   </MenuItem>
@@ -52,7 +52,7 @@ const MenuItemCategoryPc  = categories?.map((category) => (
 
 
 
-const ListCategoryMobile  =  categories?.map(category=>{
+const ListCategoryMobile  =  categories?.categories?.map(category=>{
   return(
     <ListItemButton key={category.name} component={Link} to={`/productCategory/${category.slug}`} sx={{ pl: 3 }}>
     <ListItemAvatar>
@@ -152,7 +152,7 @@ className={classes.title}
          
          
          
-          {  (categories)&&(<MenuItem
+          {  (categories.categories)&&(<MenuItem
               size="medium"
               aria-label="account of current user"
               aria-controls="menu-appCategories"
@@ -190,9 +190,9 @@ className={classes.title}
        
         
             {  (location.pathname !== '/order')  && (
-               isLoading ? <> </> : ( <div className={classes.button}>
+               cart.isLoading ? <> </> : ( <div className={classes.button}>
                 <IconButton  component = {Link} to='/order' aria-label="Show cart items" color="inherit">
-                 <Badge badgeContent = {total_items } color="secondary">
+                 <Badge badgeContent = {cart.cart.total_items } color="secondary">
                    <ShoppingCart />
                  </Badge>
                 </IconButton>
